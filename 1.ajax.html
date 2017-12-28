@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="btn">request</button>
+  <script src="./node_modules/jquery/dist/jquery.min.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    $(function() {
+      let $btn = $('#btn');
+      let reqXHR;
+      let pendingRequest = {};
+      $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+        if (options.mode === 'abort') {
+          if (pendingRequest[options.url]) {
+            pendingRequest[options.url].abort()
+          }
+            pendingRequest[options.url] = jqXHR;
+        }
+      })
+
+      const request = function() {
+        $that = $(this);
+        reqXHR = $.ajax({
+          mode: 'abort', // 防止频繁多次请求同一个接口
+          beforeSend() {
+            // $that.prop('disabled', true);
+          },
+          url: '/data',
+          type: 'GET',
+          data: {
+            id: 24
+          },
+          success(res) {
+            console.log(res);
+            // $that.prop('disabled', false);
+          }
+        })
+      }
+
+      $btn.click(request);
+    })
+  </script>
+</body>
+
+</html>
